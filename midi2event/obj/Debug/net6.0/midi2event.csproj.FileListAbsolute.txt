@@ -1,0 +1,14 @@
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\net6.0\midi2event.exe
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\net6.0\midi2event.deps.json
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\net6.0\midi2event.runtimeconfig.json
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\net6.0\midi2event.dll
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\net6.0\midi2event.pdb
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.AssemblyInfoInputs.cache
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.AssemblyInfo.cs
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.csproj.CoreCompileInputs.cache
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.dll
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\refint\midi2event.dll
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.pdb
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\midi2event.genruntimeconfig.cache
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\net6.0\ref\midi2event.dll

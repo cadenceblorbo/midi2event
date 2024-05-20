@@ -1,0 +1,7 @@
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\midi2event.csproj.AssemblyReference.cache
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\midi2event.csproj.CoreCompileInputs.cache
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\midi2event.exe.config
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\midi2event.exe
+C:\Users\mreva\source\repos\midi2event\midi2event\bin\Debug\midi2event.pdb
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\midi2event.exe
+C:\Users\mreva\source\repos\midi2event\midi2event\obj\Debug\midi2event.pdb
