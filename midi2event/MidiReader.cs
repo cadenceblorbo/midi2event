@@ -66,6 +66,7 @@ namespace midi2event
         private enum ChunkTypes
         {
             MThd = 1297377380,
+            MTrk = 1297379947
         }
     }
 }
