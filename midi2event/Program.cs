@@ -4,4 +4,4 @@ using System.Diagnostics;
 
 Console.WriteLine("Hello, World!");
 
-MidiReader reader = new("testfiles\\midi sys test1.mid");
+MidiReader reader = new("testfiles/midi sys test1.mid");

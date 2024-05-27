@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,14 +10,18 @@ namespace midi2event
 {
     internal class Midi2Event
     {
-        private Dictionary<int, Action> _events;
+        private Dictionary<int, Action> _startEvents;
+        private Dictionary<int, Action> _stopEvents;
+        private Dictionary<int, Action> _duringEvents;
         private Queue<MTrkEvent> _messages;
 
         private readonly int TET = 12;
 
         public Midi2Event()
         {
-            _events = new Dictionary<int, Action>();
+            _startEvents = new Dictionary<int, Action>();
+            _stopEvents = new Dictionary<int, Action>();
+            _duringEvents = new Dictionary<int, Action>();
         }
 
         public void Update(double deltaTime) { }
@@ -30,14 +36,29 @@ namespace midi2event
             return TET * (octave + 1) + (int)note;
         }
 
-        public void Subscribe(Action action, Notes note, int octave)
+        public void Subscribe(Action action, Notes note, int octave, SubType type = SubType.Start)
         {
+            Dictionary<int, Action> events = ToNoteMap(type);
             int noteId = ToNoteId(note, octave);
-            if (!_events.ContainsKey(noteId))
+            if (!events.ContainsKey(noteId))
             {
-                _events.Add(noteId, () => { });
+                events.Add(noteId, () => { });
             }
-            _events[noteId] += action;
+            events[noteId] += action;
+        }
+
+        private Dictionary<int, Action> ToNoteMap(SubType type) => type switch{
+            SubType.Start => _startEvents,
+            SubType.During => _duringEvents,
+            SubType.Stop => _stopEvents,
+            _ => throw new NotImplementedException("No note map for specified SubType!")
+        };
+
+        public enum SubType
+        {
+            Start,
+            Stop,
+            During
         }
 
         public enum Notes
@@ -55,5 +76,7 @@ namespace midi2event
             As = 10,
             B = 11
         }
+
+
     }
 }
