@@ -12,7 +12,6 @@ namespace midi2event
     {
         private Dictionary<int, Action> _startEvents;
         private Dictionary<int, Action> _stopEvents;
-        private Dictionary<int, Action> _duringEvents;
         private Queue<MTrkEvent> _messages;
 
         private readonly int TET = 12;
@@ -21,7 +20,7 @@ namespace midi2event
         {
             _startEvents = new Dictionary<int, Action>();
             _stopEvents = new Dictionary<int, Action>();
-            _duringEvents = new Dictionary<int, Action>();
+            _messages = new Queue<MTrkEvent>();
         }
 
         public void Update(double deltaTime) { }
@@ -49,7 +48,6 @@ namespace midi2event
 
         private Dictionary<int, Action> ToNoteMap(SubType type) => type switch{
             SubType.Start => _startEvents,
-            SubType.During => _duringEvents,
             SubType.Stop => _stopEvents,
             _ => throw new NotImplementedException("No note map for specified SubType!")
         };

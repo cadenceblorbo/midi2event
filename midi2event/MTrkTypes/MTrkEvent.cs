@@ -6,5 +6,7 @@ using System.Threading.Tasks;
 
 namespace midi2event
 {
-    internal class MTrkEvent { }
+    internal class MTrkEvent {
+        
+     }
 }
