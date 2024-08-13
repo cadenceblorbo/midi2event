@@ -11,24 +11,18 @@ namespace midi2event
 {
     internal class MidiReader
     {
-        private string fileName;
-        private ushort _ticksPerQuarter;
 
         private readonly uint MTHD_LENGTH = 6;
 
-        public MidiReader(string fileName)
-        {
-            this.fileName = fileName;
-        }
-
-        public Queue<MTrkEvent> Read(){
+        public (ushort, Queue<MTrkEvent>) Read(string fileName){
             Stream fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
-            ReadHeader(fileStream);
-            Queue<MTrkEvent> result = ReadTrack(fileStream);
-            return result;
+            ushort result1 = ReadHeader(fileStream);
+            Queue<MTrkEvent> result2 = ReadTrack(fileStream);
+            fileStream.Close();
+            return (result1, result2);
         }
 
-        private void ReadHeader(Stream fileStream)
+        private ushort ReadHeader(Stream fileStream)
         {
             byte[] buffer = new byte[4];
             //MThd header
@@ -60,14 +54,17 @@ namespace midi2event
             }
             //delta time meaning (only supports ticks per quarter-note)
             fileStream.Read(buffer, 2, 2);
-            ushort division = BinaryPrimitives.ReadUInt16BigEndian(buffer);
+            ushort division = (ushort)BinaryPrimitives.ReadUInt32BigEndian(buffer);
             if ((division & 0x8000) != 0)
             {
                 throw new InvalidDataException("Only supports ticks per quarter note for now :<");
             }
-            _ticksPerQuarter = division;
+            ushort ticksPerQuarter = division;
+            Debug.WriteLine(division);
+            Debug.WriteLine(ticksPerQuarter);
 
             Debug.WriteLine("header successfully read!");
+            return ticksPerQuarter;
         }
 
         private Queue<MTrkEvent> ReadTrack(Stream fileStream){
@@ -91,6 +88,9 @@ namespace midi2event
                 if (nextEvent is not null){
                     result.Enqueue(nextEvent);
                 }
+                if(nextEvent is EndTrackMeta){
+                    trackOver = true;
+                }
             }
             return result;
         }
@@ -100,24 +100,52 @@ namespace midi2event
             
             byte status = (byte)fileStream.ReadByte();
             switch(status){
+
                 case (byte)StatusTypes.NoteOn:
-                    
-                    break;
+                {
+                    byte noteNum = (byte)fileStream.ReadByte();
+                    byte vel = (byte)fileStream.ReadByte();
+                    return new NoteOnEvent(delta, noteNum, vel);
+                }
                 case (byte)StatusTypes.NoteOff:
-
-                    break;
+                {
+                    byte noteNum = (byte)fileStream.ReadByte();
+                    byte vel = (byte)fileStream.ReadByte();
+                    return new NoteOffEvent(delta, noteNum, vel);
+                }
                 case (byte)StatusTypes.MetaEvent:
-
-                    break;
+                {
+                    return ReadMetaEvent(fileStream, delta);
+                }
                 default:
+                    Debug.WriteLine("Unsupported chunk detected!");
                     return null;
             }
-
-            return new MTrkEvent();
         }
 
-        private MTrkEvent? ReadMetaEvent(Stream fileStream){
-            return new MTrkEvent();
+        private MTrkEvent? ReadMetaEvent(Stream fileStream, uint delta){
+            byte status = (byte)fileStream.ReadByte();
+            switch(status){
+                case (byte)MetaTypes.SetTempo:
+                {
+                    fileStream.ReadByte(); //length is always 3
+                    byte[] buffer = new byte[4];
+                    fileStream.Read(buffer, 1, 3);
+                    uint usPerQuarter = BinaryPrimitives.ReadUInt32BigEndian(buffer);
+                    return new SetTempoMeta(delta, usPerQuarter);
+                }
+                case (byte)MetaTypes.EndOfTrack:
+                {
+                    return new EndTrackMeta(delta);
+                }
+                default:
+                    Debug.WriteLine("Unsupported chunk detected!");
+                    byte length = (byte)fileStream.ReadByte();
+                    for (int i = 0; i<length; i++){
+                        fileStream.ReadByte();
+                    }
+                    return null;
+            }
         }
 
         private uint ParseVarLen(Stream fileStream){

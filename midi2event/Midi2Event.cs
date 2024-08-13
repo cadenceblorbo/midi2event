@@ -12,33 +12,115 @@ namespace midi2event
     {
         private Dictionary<int, Action> _startEvents;
         private Dictionary<int, Action> _stopEvents;
+        private Action _endEvent;
         private Queue<MTrkEvent> _messages;
+        private Queue<MTrkEvent> _bin;
+        private MidiReader _reader;
+        private uint _ticksPerQuarter;
 
+        private double _deltaTimeSinceLastUpdate = 0;
+
+        private double _deltaTimeToNextUpdate = 0;
+
+   
+        private uint _usPerQuarter = 500000;
+        private bool _isPlaying = false;
         private readonly int TET = 12;
+        private readonly double US_TO_S = 1e-6;
 
-        public Midi2Event()
+        public Midi2Event(string filePath)
         {
             _startEvents = new Dictionary<int, Action>();
             _stopEvents = new Dictionary<int, Action>();
-            _messages = new Queue<MTrkEvent>();
+            _endEvent = () => {};
+            _reader = new MidiReader();
+            (_ticksPerQuarter, _messages) = _reader.Read(filePath);
+            _bin = new();
+
+            if(_messages.Count<=0){
+                Debug.WriteLine("Provided midi generated no events, was this intended?");
+            }
         }
 
-        public void Update(double deltaTime) { }
+        
+
+        public void Update(double deltaTime) {
+            if(_isPlaying && _messages.Count>0){
+                _deltaTimeSinceLastUpdate += deltaTime;
+                while(_deltaTimeToNextUpdate <= _deltaTimeSinceLastUpdate){
+                    MTrkEvent toProcess = _messages.Dequeue();
+                    GetEvent(toProcess).Invoke();
+                    _bin.Enqueue(toProcess);
+
+                    _deltaTimeSinceLastUpdate = 0;
+                    if(_messages.Count<=0){
+                        _isPlaying = false;
+                        return;
+                    }
+                    _deltaTimeToNextUpdate = DeltaToDeltaTime(_messages.Peek().Delta);
+                }
+            }
+        }
+
+        private Action GetEvent(MTrkEvent e){
+            return e switch {
+                NoteOnEvent on => _startEvents[on.Note],
+                NoteOffEvent off => _stopEvents[off.Note],
+                EndTrackMeta => _endEvent,
+                SetTempoMeta st => () => {_usPerQuarter = st.USPerQuarter;},
+                _ => () => {throw new Exception("Soomething went terribly wrong :'< Exception thrown in event handling");}
+            };
+        }
+
+        private double DeltaToDeltaTime(uint delta){
+            return delta * (_usPerQuarter/_ticksPerQuarter) * US_TO_S;
+        }
+
+        public void Back()
+        {
+            _deltaTimeSinceLastUpdate = 0;
+            _deltaTimeToNextUpdate = 0;
+            _usPerQuarter = 500000;
+            while(_messages.Count > 0){
+                MTrkEvent transfer = _messages.Dequeue();
+                _bin.Enqueue(transfer);
+            }
+            _messages = new(_bin);
+            _bin = new();
+        }
 
         public void Reset()
         {
-            //TODO
+            Back();
+            _isPlaying = false;
+        }
+
+        public void Play(){
+            if(_messages.Count<=0){
+                return;
+            }
+            _isPlaying = true;
+            _deltaTimeToNextUpdate = DeltaToDeltaTime(_messages.Peek().Delta);
+        }
+
+        public void Pause(){
+            _isPlaying = false;
         }
 
         private int ToNoteId(Notes note, int octave)
         {
-            return TET * (octave + 1) + (int)note;
+            return TET * (octave + 2) + (int)note;
         }
 
-        public void Subscribe(Action action, Notes note, int octave, SubType type = SubType.Start)
+        public void Subscribe(Action action, Notes note = 0, int octave = 0, SubType type = SubType.Start)
         {
+            if(type == SubType.End){
+                _endEvent += action;
+                return;
+            }
             Dictionary<int, Action> events = ToNoteMap(type);
             int noteId = ToNoteId(note, octave);
+            Debug.WriteLine(noteId);
             if (!events.ContainsKey(noteId))
             {
                 events.Add(noteId, () => { });
@@ -56,7 +138,7 @@ namespace midi2event
         {
             Start,
             Stop,
-            During
+            End
         }
 
         public enum Notes

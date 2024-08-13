@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace midi2event
 {
     internal class MTrkEvent {
-        
+        public uint Delta {get; set;}
      }
 }
