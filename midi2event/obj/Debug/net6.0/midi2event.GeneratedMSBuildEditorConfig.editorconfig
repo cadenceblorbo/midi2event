@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = midi2event
-build_property.ProjectDir = /Users/carolinebohme2/Documents/GitHub/midi2event/midi2event/
+build_property.ProjectDir = C:\Users\mreva\source\repos\midi2event\midi2event\

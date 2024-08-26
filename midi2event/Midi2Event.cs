@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace midi2event
 {
-    internal class Midi2Event
+    public class Midi2Event
     {
         private Dictionary<int, Action> _startEvents;
         private Dictionary<int, Action> _stopEvents;
@@ -22,58 +22,77 @@ namespace midi2event
 
         private double _deltaTimeToNextUpdate = 0;
 
-   
         private uint _usPerQuarter = 500000;
         private bool _isPlaying = false;
         private readonly int TET = 12;
         private readonly double US_TO_S = 1e-6;
 
-        public Midi2Event(string filePath)
+        public Midi2Event(string filePath, int lowestOctave = -1)
         {
             _startEvents = new Dictionary<int, Action>();
             _stopEvents = new Dictionary<int, Action>();
-            _endEvent = () => {};
+            _endEvent = () => { };
             _reader = new MidiReader();
             (_ticksPerQuarter, _messages) = _reader.Read(filePath);
             _bin = new();
 
-            if(_messages.Count<=0){
+            if (_messages.Count <= 0)
+            {
                 Debug.WriteLine("Provided midi generated no events, was this intended?");
             }
         }
 
-        
-
-        public void Update(double deltaTime) {
-            if(_isPlaying && _messages.Count>0){
+        public void Update(double deltaTime)
+        {
+            if (_isPlaying && _messages.Count > 0)
+            {
                 _deltaTimeSinceLastUpdate += deltaTime;
-                while(_deltaTimeToNextUpdate <= _deltaTimeSinceLastUpdate){
+                while (_deltaTimeToNextUpdate <= _deltaTimeSinceLastUpdate)
+                {
+                    double makeup = _deltaTimeSinceLastUpdate - _deltaTimeToNextUpdate;
                     MTrkEvent toProcess = _messages.Dequeue();
                     GetEvent(toProcess).Invoke();
                     _bin.Enqueue(toProcess);
 
                     _deltaTimeSinceLastUpdate = 0;
-                    if(_messages.Count<=0){
+                    if (_messages.Count <= 0)
+                    {
                         _isPlaying = false;
                         return;
                     }
-                    _deltaTimeToNextUpdate = DeltaToDeltaTime(_messages.Peek().Delta);
+                    _deltaTimeToNextUpdate = DeltaToDeltaTime(_messages.Peek().Delta) - makeup;
                 }
             }
         }
 
-        private Action GetEvent(MTrkEvent e){
-            return e switch {
-                NoteOnEvent on => _startEvents[on.Note],
-                NoteOffEvent off => _stopEvents[off.Note],
+        private Action GetEvent(MTrkEvent e)
+        {
+            return e switch
+            {
+                NoteOnEvent on => TryGetEvent(_startEvents, on.Note),
+                NoteOffEvent off => TryGetEvent(_stopEvents, off.Note),
                 EndTrackMeta => _endEvent,
-                SetTempoMeta st => () => {_usPerQuarter = st.USPerQuarter;},
-                _ => () => {throw new Exception("Soomething went terribly wrong :'< Exception thrown in event handling");}
+                SetTempoMeta st
+                    => () =>
+                    {
+                        _usPerQuarter = st.USPerQuarter;
+                    },
+                _ => () => { }
             };
         }
 
-        private double DeltaToDeltaTime(uint delta){
-            return delta * (_usPerQuarter/_ticksPerQuarter) * US_TO_S;
+        private Action TryGetEvent(Dictionary<int, Action> dict, int index)
+        {
+            if (dict.ContainsKey(index))
+            {
+                return dict[index];
+            }
+            return () => { };
+        }
+
+        private double DeltaToDeltaTime(uint delta)
+        {
+            return delta * (_usPerQuarter / _ticksPerQuarter) * US_TO_S;
         }
 
         public void Back()
@@ -81,7 +100,8 @@ namespace midi2event
             _deltaTimeSinceLastUpdate = 0;
             _deltaTimeToNextUpdate = 0;
             _usPerQuarter = 500000;
-            while(_messages.Count > 0){
+            while (_messages.Count > 0)
+            {
                 MTrkEvent transfer = _messages.Dequeue();
                 _bin.Enqueue(transfer);
             }
@@ -95,15 +115,18 @@ namespace midi2event
             _isPlaying = false;
         }
 
-        public void Play(){
-            if(_messages.Count<=0){
+        public void Play()
+        {
+            if (_messages.Count <= 0)
+            {
                 return;
             }
             _isPlaying = true;
             _deltaTimeToNextUpdate = DeltaToDeltaTime(_messages.Peek().Delta);
         }
 
-        public void Pause(){
+        public void Pause()
+        {
             _isPlaying = false;
         }
 
@@ -112,27 +135,41 @@ namespace midi2event
             return TET * (octave + 2) + (int)note;
         }
 
-        public void Subscribe(Action action, Notes note = 0, int octave = 0, SubType type = SubType.Start)
+        public Action Subscribe(
+            Action action,
+            Notes note = 0,
+            int octave = 0,
+            SubType type = SubType.Start
+        )
         {
-            if(type == SubType.End){
+            if (type == SubType.End)
+            {
                 _endEvent += action;
-                return;
+                return () =>
+                {
+                    _endEvent -= action;
+                };
             }
             Dictionary<int, Action> events = ToNoteMap(type);
             int noteId = ToNoteId(note, octave);
-            Debug.WriteLine(noteId);
             if (!events.ContainsKey(noteId))
             {
                 events.Add(noteId, () => { });
             }
             events[noteId] += action;
+            return () =>
+            {
+                events[noteId] -= action;
+            };
         }
 
-        private Dictionary<int, Action> ToNoteMap(SubType type) => type switch{
-            SubType.Start => _startEvents,
-            SubType.Stop => _stopEvents,
-            _ => throw new NotImplementedException("No note map for specified SubType!")
-        };
+        private Dictionary<int, Action> ToNoteMap(SubType type) =>
+            type switch
+            {
+                SubType.Start => _startEvents,
+                SubType.Stop => _stopEvents,
+                _ => throw new NotImplementedException("No note map for specified SubType!")
+            };
 
         public enum SubType
         {
@@ -156,7 +193,5 @@ namespace midi2event
             As = 10,
             B = 11
         }
-
-
     }
 }

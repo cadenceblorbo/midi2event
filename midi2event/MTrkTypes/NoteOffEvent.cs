@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace midi2event
 {
-    internal class NoteOffEvent: MTrkEvent {
-        public byte Note {get; set;}
-        public byte Velocity {get; set;}
+    internal class NoteOffEvent : MTrkEvent
+    {
+        public byte Note { get; set; }
+        public byte Velocity { get; set; }
 
-        public NoteOffEvent(uint delta, byte note, byte velocity){
+        public NoteOffEvent(uint delta, byte note, byte velocity)
+            : base(delta)
+        {
             this.Delta = delta;
             this.Note = note;
             this.Velocity = velocity;
         }
-     }
+    }
 }

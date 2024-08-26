@@ -3,11 +3,13 @@ using midi2event;
 using System.Diagnostics;
 
 Console.WriteLine("Hello, World!");
-string path = "testfiles/midi sys test1.mid";
+string path =
+    "C:\\Users\\mreva\\source\\repos\\midi2event\\midi2event\\testfiles\\testchart(2).mid";
 double cap = 10;
 
 Midi2Event eventSys = new Midi2Event(path);
 
+/*
 eventSys.Subscribe(
     () => {Console.WriteLine("C down");},
     Midi2Event.Notes.C,
@@ -103,6 +105,4 @@ while(totalElapsed  < cap){
 
 
 Console.WriteLine("End of script");
-
-
-
+*/
