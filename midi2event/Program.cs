@@ -8,7 +8,7 @@ string path =
 double cap = 10;
 
 Midi2Event eventSys = new Midi2Event(path);
-
+Debug.WriteLine("000");
 /*
 eventSys.Subscribe(
     () => {Console.WriteLine("C down");},

@@ -114,7 +114,7 @@ namespace midi2event
             else
             {
                 status = lastStatusByte;
-                fileStream.Seek(fileStream.Position, SeekOrigin.Begin);
+                fileStream.Seek(fileStream.Position - 1, SeekOrigin.Begin);
             }
 
             switch (status)
@@ -134,11 +134,13 @@ namespace midi2event
                 case (byte)StatusTypes.PolyKeyPres:
                 case (byte)StatusTypes.CtrlChange:
                 case (byte)StatusTypes.PitchWheel:
+                    //two data byte unsupported
                     fileStream.ReadByte();
                     fileStream.ReadByte();
                     return new MTrkEvent(delta);
                 case (byte)StatusTypes.ProgChange:
                 case (byte)StatusTypes.ChannelPres:
+                    //one data byte unsupported
                     fileStream.ReadByte();
                     return new MTrkEvent(delta);
                 case (byte)StatusTypes.MetaEvent:
