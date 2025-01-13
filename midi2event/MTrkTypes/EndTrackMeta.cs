@@ -1,4 +1,4 @@
-namespace midi2event
+namespace MIDI2Event
 {
     internal class EndTrackMeta : MTrkEvent
     {

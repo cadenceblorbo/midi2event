@@ -8,13 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 
-namespace midi2event
+namespace MIDI2Event
 {
     internal class MidiReader
     {
+        //midi format documentation: http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
+
         private readonly uint MTHD_LENGTH = 6;
         private byte lastStatusByte;
 
+        //read the midi file into a queue of MTrkEvents
         public (ushort, Queue<MTrkEvent>) Read(string fileName)
         {
             Stream fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read);
@@ -24,6 +27,7 @@ namespace midi2event
             return (result1, result2);
         }
 
+        //read the header of the midi file to ensure it is a supported format
         private ushort ReadHeader(Stream fileStream)
         {
             byte[] buffer = new byte[4];
@@ -69,7 +73,6 @@ namespace midi2event
             return ticksPerQuarter;
         }
 
-#nullable enable
         private Queue<MTrkEvent> ReadTrack(Stream fileStream)
         {
             Queue<MTrkEvent> result = new();
@@ -88,11 +91,8 @@ namespace midi2event
             bool trackOver = false;
             while (!trackOver)
             {
-                MTrkEvent? nextEvent = ReadNextMTrkEvent(fileStream);
-                if (nextEvent is not null)
-                {
-                    result.Enqueue(nextEvent);
-                }
+                MTrkEvent nextEvent = ReadNextMTrkEvent(fileStream);
+                result.Enqueue(nextEvent);
                 if (nextEvent is EndTrackMeta)
                 {
                     trackOver = true;
@@ -101,12 +101,12 @@ namespace midi2event
             return result;
         }
 
-        private MTrkEvent? ReadNextMTrkEvent(Stream fileStream)
+        private MTrkEvent ReadNextMTrkEvent(Stream fileStream)
         {
             uint delta = ParseVarLen(fileStream);
             byte status = (byte)fileStream.ReadByte();
 
-            //account forrunning status
+            //account for running status
             if ((status & 0x80) > 0)
             {
                 lastStatusByte = status;
@@ -117,49 +117,47 @@ namespace midi2event
                 fileStream.Seek(fileStream.Position - 1, SeekOrigin.Begin);
             }
 
-            switch (status)
+            //create the correct MTrkEvent type and advance the file
+            if (status == (byte)StatusTypes.MetaEvent)
             {
-                case (byte)StatusTypes.NoteOn:
+                return ReadMetaEvent(fileStream, delta);
+            }
+            switch (status >> 4)
+            {
+                case (byte)StatusTypes.NoteOn >> 4:
                 {
                     byte noteNum = (byte)fileStream.ReadByte();
                     byte vel = (byte)fileStream.ReadByte();
                     return new NoteOnEvent(delta, noteNum, vel);
                 }
-                case (byte)StatusTypes.NoteOff:
+                case (byte)StatusTypes.NoteOff >> 4:
                 {
                     byte noteNum = (byte)fileStream.ReadByte();
                     byte vel = (byte)fileStream.ReadByte();
                     return new NoteOffEvent(delta, noteNum, vel);
                 }
-                case (byte)StatusTypes.PolyKeyPres:
-                case (byte)StatusTypes.CtrlChange:
-                case (byte)StatusTypes.PitchWheel:
-                    //two data byte unsupported
+                case (byte)StatusTypes.PolyKeyPres >> 4:
+                case (byte)StatusTypes.CtrlChange >> 4:
+                case (byte)StatusTypes.PitchWheel >> 4:
                     fileStream.ReadByte();
                     fileStream.ReadByte();
                     return new MTrkEvent(delta);
-                case (byte)StatusTypes.ProgChange:
-                case (byte)StatusTypes.ChannelPres:
-                    //one data byte unsupported
+                case (byte)StatusTypes.ProgChange >> 4:
+                case (byte)StatusTypes.ChannelPres >> 4:
                     fileStream.ReadByte();
                     return new MTrkEvent(delta);
-                case (byte)StatusTypes.MetaEvent:
-                {
-                    return ReadMetaEvent(fileStream, delta);
-                }
                 default:
-                    Debug.WriteLine(
+                    throw new Exception(
                         "Unsupported chunk "
                             + status.ToString("X")
                             + " detected at byte "
                             + (fileStream.Position - 1).ToString("X")
                             + "!"
                     );
-                    return null;
             }
         }
 
-        private MTrkEvent? ReadMetaEvent(Stream fileStream, uint delta)
+        private MTrkEvent ReadMetaEvent(Stream fileStream, uint delta)
         {
             byte status = (byte)fileStream.ReadByte();
 
@@ -183,6 +181,7 @@ namespace midi2event
                             + (fileStream.Position - 1).ToString("X")
                             + "! skipping..."
                     );
+                    //skip over metadata
                     byte length = (byte)fileStream.ReadByte();
                     for (int i = 0; i < length; i++)
                     {
@@ -191,8 +190,6 @@ namespace midi2event
                     return new MTrkEvent(delta);
             }
         }
-
-#nullable disable
 
         private uint ParseVarLen(Stream fileStream)
         {
