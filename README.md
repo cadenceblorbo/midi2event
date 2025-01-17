@@ -69,22 +69,23 @@ As this library was developed for personal use at first, it currently has limita
 - [ ] Premade Engine Packages
     - [ ] Unity
     - [ ] Godot
+- [ ] Formal Documentation
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## License
 
-Distributed under the project_license. See `LICENSE.txt` for more information.
+Distributed under the GNU Lesser General Public License, Version 3. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## Contact
 
-Cadence Hagenauer - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Cadence Hagenauer - [devilstritone#0000](https://discord.com/users/302985879666950144) - cadence.hagenauer@gmail.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/cadenceblorbo/midi2event](https://github.com/cadenceblorbo/midi2event)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
