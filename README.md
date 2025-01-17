@@ -18,6 +18,7 @@
     <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#usage">Current Limitations</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -45,6 +46,16 @@ using MIDI2Event;
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Current Limitations
+As this library was developed for personal use at first, it currently has limitations on the kind of MIDI data that can be used:
+* MIDI data must use format 0 (consisting of a single MIDI track).
+* Delta-time must be encoded using ticks per quarter note.
+
+([This page](http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html) has more details on the MIDI file format.)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
