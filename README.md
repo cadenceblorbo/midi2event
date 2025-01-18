@@ -5,9 +5,6 @@
   <a href="https://github.com/cadenceblorbo/midi2event">
     <img src="Logo.png" alt="MIDI2EventLogo" width="768" height="120">
   </a>
-
-<h3 align="center">MIDI2Event</h3>
-
   <p align="center">A lightweight C# library for synchronizing audio and code events in an artist-driven context.</p>
   <p align="center"><a href="https://github.com/cadenceblorbo/midi2event/issues">Report Bug/Request Feature</a></p>
 </div>
