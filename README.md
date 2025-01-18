@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/cadenceblorbo/midi2event">
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="logo.png" alt="MIDI2EventLogo" width="80" height="80">
   </a>
 
 <h3 align="center">MIDI2Event</h3>
@@ -30,6 +30,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="#Acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -141,6 +142,14 @@ Distributed under the GNU Lesser General Public License, Version 3. See `LICENSE
 Cadence Hagenauer - [devilstritone#0000](https://discord.com/users/302985879666950144) - cadence.hagenauer@gmail.com
 
 Project Link: [https://github.com/cadenceblorbo/midi2event](https://github.com/cadenceblorbo/midi2event)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Acknowledgments
+
+* [Estrogen Font by Apostrophic Laboratory](https://luc.devroye.org/fonts-24297.html)
+* [Membra Font by Disaster Fonts](http://disasterfonts.co.uk/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
