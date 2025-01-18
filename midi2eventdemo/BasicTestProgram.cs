@@ -23,7 +23,7 @@ eventSys.Subscribe(
     },
     MIDI2Event.Notes.C,
     3,
-    MIDI2EventSystem.SubType.Stop
+    MIDI2EventSystem.SubType.NoteStop
 );
 
 eventSys.Subscribe(
@@ -42,7 +42,7 @@ eventSys.Subscribe(
     },
     MIDI2Event.Notes.D,
     3,
-    MIDI2EventSystem.SubType.Stop
+    MIDI2EventSystem.SubType.NoteStop
 );
 
 eventSys.Subscribe(
@@ -61,7 +61,7 @@ eventSys.Subscribe(
     },
     MIDI2Event.Notes.E,
     3,
-    MIDI2EventSystem.SubType.Stop
+    MIDI2EventSystem.SubType.NoteStop
 );
 
 eventSys.Subscribe(
@@ -80,7 +80,7 @@ eventSys.Subscribe(
     },
     MIDI2Event.Notes.F,
     3,
-    MIDI2EventSystem.SubType.Stop
+    MIDI2EventSystem.SubType.NoteStop
 );
 
 eventSys.Subscribe(
@@ -99,7 +99,7 @@ eventSys.Subscribe(
     },
     MIDI2Event.Notes.G,
     3,
-    MIDI2EventSystem.SubType.Stop
+    MIDI2EventSystem.SubType.NoteStop
 );
 
 eventSys.Subscribe(

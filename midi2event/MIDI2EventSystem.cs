@@ -70,7 +70,7 @@ namespace MIDI2Event
 
         /*
          *  Call this every update frame in whatever engine/tool you're using.
-         *  It is advised to calculate this based on the samples of the audio you're using
+         *  It is advised to calculate this deltaTime in seconds based on the samples of the audio you're using
          *  for maximum accuracy.
          */
         public void Update(double deltaTime)
@@ -114,7 +114,7 @@ namespace MIDI2Event
             Action action,
             Notes note = 0,
             int octave = 0,
-            SubType type = SubType.Start
+            SubType type = SubType.NoteStart
         )
         {
             if (type == SubType.ChartEnd)
@@ -140,8 +140,8 @@ namespace MIDI2Event
 
         public enum SubType
         {
-            Start,
-            Stop,
+            NoteStart,
+            NoteStop,
             ChartEnd
         }
 
@@ -233,8 +233,8 @@ namespace MIDI2Event
         private Dictionary<int, Action> ToNoteMap(SubType type) =>
             type switch
             {
-                SubType.Start => _startEvents,
-                SubType.Stop => _stopEvents,
+                SubType.NoteStart => _startEvents,
+                SubType.NoteStop => _stopEvents,
                 _ => throw new NotImplementedException("No note map for specified SubType!")
             };
     }
