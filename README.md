@@ -43,7 +43,7 @@ This library was primarily created for the sake of game developers, but could be
 
 ## Getting Started
 
-Download the latest source code .zip or .dll and place it in your project. Import the MIDI2Event namespace at the top of your script with a `using` statement:
+Download the latest LibOnly archive or the .dll and place it in your project. Import the MIDI2Event namespace at the top of your script with a `using` statement:
 ```csharp
 using MIDI2Event;
 ```
