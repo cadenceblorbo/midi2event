@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/cadenceblorbo/midi2event">
-    <img src="Logo.png" alt="MIDI2EventLogo" width="80" height="80">
+    <img src="Logo.png" alt="MIDI2EventLogo" width="3840" height="600">
   </a>
 
 <h3 align="center">MIDI2Event</h3>
