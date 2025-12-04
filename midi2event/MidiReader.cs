@@ -91,7 +91,16 @@ namespace MIDI2Event
             bool trackOver = false;
             while (!trackOver)
             {
-                MTrkEvent nextEvent = ReadNextMTrkEvent(fileStream);
+                MTrkEvent nextEvent;
+                try
+                {
+                    nextEvent = ReadNextMTrkEvent(fileStream);
+                }
+                catch (Exception e)
+                {
+                    throw new IOException("Error when reading file! " + e);
+                }
+
                 result.Enqueue(nextEvent);
                 if (nextEvent is EndTrackMeta)
                 {
@@ -147,7 +156,7 @@ namespace MIDI2Event
                     fileStream.ReadByte();
                     return new MTrkEvent(delta);
                 default:
-                    throw new Exception(
+                    throw new IOException(
                         "Unsupported chunk "
                             + status.ToString("X")
                             + " detected at byte "
