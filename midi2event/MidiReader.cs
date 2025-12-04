@@ -66,10 +66,10 @@ namespace MIDI2Event
                 throw new InvalidDataException("Only supports ticks per quarter note for now :<");
             }
             ushort ticksPerQuarter = division;
-            Debug.WriteLine(division);
-            Debug.WriteLine(ticksPerQuarter);
+            //Debug.WriteLine(division);
+            //Debug.WriteLine(ticksPerQuarter);
 
-            Debug.WriteLine("header successfully read!");
+            //Debug.WriteLine("header successfully read!");
             return ticksPerQuarter;
         }
 
